@@ -1,8 +1,13 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { ToastContainer, toast } from "react-toastify";
+import axios from 'axios'
+import { useQuery } from "@tanstack/react-query";
+import useAdmin from "../hooks/useAdmin";
+import useAuth from "../hooks/useAuth";
 
 const Profile = ({ user }) => {
+  const [isAdmin, isAdminLoading] = useAdmin()
   const { logOut } = useContext(AuthContext);
   const handleLogout = () => {
     logOut()
@@ -12,6 +17,7 @@ const Profile = ({ user }) => {
       })
       .catch((error) => {});
   };
+  
   
   return (
     <div>
@@ -52,6 +58,10 @@ const Profile = ({ user }) => {
             <li>
               <a>Setting</a>
             </li>
+            {isAdmin?<li>
+              <a href="/dashboard">Dashboard</a>
+            </li>:""}
+            
             <li>
               <a onClick={handleLogout}>Logout</a>
             </li>

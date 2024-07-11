@@ -9,7 +9,6 @@ import Profile from "./Profile";
 function Navbar() {
   const [isSticky, setSticky] = useState(false);
   const { user } = useContext(AuthContext);
-  const [CartItems, setCartItems] = useState([]);
   const [cart, refetch] = Usecart();
   const location = useLocation();
   const [isScrolled, setScrolled] = useState(false);
@@ -26,13 +25,12 @@ function Navbar() {
       }
     };
 
-    setCartItems(cart);
     window.addEventListener("scroll", handleScroll);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [cart]);
+  }, []);
 
   const navitems = (
     <>

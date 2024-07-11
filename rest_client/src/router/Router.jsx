@@ -19,6 +19,8 @@ import AddMenu from "../pages/Dashboard/admin/AddMenu";
 import MangeMenu from "../pages/Dashboard/admin/MangeMenu";
 import Orders from "../pages/Dashboard/admin/Orders";
 import PrivateRoute from "../privateRoute/PrivateRoute";
+import UpdateMenu from "../pages/Dashboard/admin/UpdateMenu";
+import Payment from "../pages/Shop/Payment";
 
 
 const router = createBrowserRouter([
@@ -40,13 +42,19 @@ const router = createBrowserRouter([
       {
         path: "/update-profile",
         element: <UpdateProfile/>
+      },
+      {
+        path:"/payment",
+        element:<Payment/>
       }
+      
     ]
   },
   ,{
     path:"/signup",
     element:<Signup/>
-  },{
+  },
+  {
     path:"/login",
     element:<LoginUser/>
   },{
@@ -71,6 +79,10 @@ const router = createBrowserRouter([
       {
         path:'orders',
         element:<Orders/>
+      },{
+        path:'update-menu/:id',
+        element:<UpdateMenu/>,
+        loader:({params})=>fetch(`http://localhost:3000/menu/${params.id}`)
       }
     ]
     } 

@@ -62,6 +62,9 @@ function Menu() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
+  // Log currentItems to check for duplicates
+  console.log('Current Items:', currentItems);
+
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -78,7 +81,7 @@ function Menu() {
           </div>
         </div>
 
-        {/* menu shop  */}
+        {/* menu shop */}
         <div className="section-container">
           <div className="flex flex-col md:flex-row flex-wrap md:justify-between items-center space-y-3 mb-8">
             {/* all category buttons */}
@@ -99,7 +102,7 @@ function Menu() {
                 onClick={() => filterItems("Burger")}
                 className={selectedCategory === "Burger" ? "active" : ""}
               >
-                Burger  
+                Burger
               </button>
               <button
                 onClick={() => filterItems("drinks")}

@@ -66,12 +66,6 @@ function Dashboardlayout() {
               </Link>
             </li>
             <li>
-              <Link to="/dashboard/users">
-                <FaBagShopping />
-                <h1>Manage Bookings</h1>
-              </Link>
-            </li>
-            <li>
               <Link to="/dashboard/addmenu">
                 <FaCirclePlus />
                 <a>Add Menu</a>

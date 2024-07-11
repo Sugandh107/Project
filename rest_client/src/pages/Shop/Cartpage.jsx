@@ -9,8 +9,12 @@ function Cartpage() {
   const [cart, refetch] = Usecart();
   const [cartItems, setcartItems] = useState([]);
 
-  const goback=()=>{
-    window.location.href="/menu"
+  const goback = () => {
+    window.location.href = "/menu";
+  };
+  const handlepayment=()=>{
+    window.location.href="/payment"
+    console.log("clicked");
   }
   const handleDelete = (item) => {
     Swal.fire({
@@ -108,7 +112,12 @@ function Cartpage() {
           <div className="md:w-1/2 px-4 space-y-7">
             <h2 className="md:text-5xl text-4xl font-bold md:leading-snug leading-snug my-14 mx-14">
               Add Items to the <span className="text-yellow-500">Cart</span>
-              <button onClick={goback} className="btn bg-red text-Black hover:bg-orange-500">Back to Menu</button>
+              <button
+                onClick={goback}
+                className="btn bg-red text-Black hover:bg-orange-500"
+              >
+                Back to Menu
+              </button>
             </h2>
           </div>
         ) : (
@@ -185,7 +194,10 @@ function Cartpage() {
             <h1 className="font-medium">Shopping Details</h1>
             <p className="font-bold">Total Items {cart.length}</p>
             <p className="font-bold">Total Price: Rs.{Total}</p>
-            <button className="btn bg-yellow-500 text-Black hover:bg-yellow-600">Proceed Checkout</button>
+            <button onClick={handlepayment}
+            className="btn bg-yellow-500 text-Black hover:bg-yellow-600">
+              Proceed Checkout
+            </button>
           </div>
         </div>
       </div>

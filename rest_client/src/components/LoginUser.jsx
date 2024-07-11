@@ -9,26 +9,42 @@ import {
 import { useForm } from "react-hook-form";
 import AuthProvider, { AuthContext } from "../context/AuthProvider";
 import { toast } from "react-toastify";
+import axios from "axios";
+import useAxiosPublic from "../hooks/useAxiosPublic";
+import useAuth from "../hooks/useAuth";
 
 function LoginUser() {
+  const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
+
   const onSubmit = (data) => {
     const email = data.email;
     const password = data.password;
+    
+
+  
+    const from = location.state?.from?.pathname || "/";
 
     login(email, password)
       .then((result) => {
-        const user = result.user;
-        toast.success("Login Sucess");
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
-      })
+      // Signed in
+      const user = result.user;
+      const userInfor = {
+        name: data.name,
+        email: data.email,
+        
+      };
+      toast.success("success")
+      window.location.href="/"
+  })
       .catch((error) => {
         const errorMessage = error.message;
         toast.error("Provide a correct gmail and password!");
@@ -40,13 +56,18 @@ function LoginUser() {
   const handlelogin = () => {
     signUpWithGmail()
       .then((result) => {
-        toast.success("Login Sucessfull");
-        const user = result.user;
-        window.location.href = "/";
+        const userInfo = {
+          name: result?.user?.displayName,
+          email: result?.user?.email,
+        };
+          //console.log(response);
+          toast.success("Login Success");
+          setTimeout(() => {
+            window.location.href="/";
+          }, 2000);
       })
       .catch((error) => {
-        console.log(error);
-        toast.error("Invalid gmail and password");
+        toast.error("Please Provid Valid Email & Password");
       });
   };
   return (

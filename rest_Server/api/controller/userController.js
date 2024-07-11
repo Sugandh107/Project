@@ -10,7 +10,18 @@ const getAllUsers = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+const getUserByEmail = async (req, res) => {
+  const email = req.params.email;
+  try {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 // post a new user
 const createUser = async (req, res) => {
   const user = req.body;
@@ -90,5 +101,6 @@ module.exports = {
   createUser,
   deleteUser,
   getAdmin,
-  makeAdmin
+  makeAdmin,
+  getUserByEmail
 };

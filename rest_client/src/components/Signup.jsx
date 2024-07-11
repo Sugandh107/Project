@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { AuthContext } from "../context/AuthProvider";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios'
 
 function Signup() {
   const {
@@ -13,7 +14,8 @@ function Signup() {
     formState: { errors },
   } = useForm();
 
-  const { createUser, signUpWithGmail, updateUserProfile } = useContext(AuthContext);
+  const { createUser, signUpWithGmail, updateUserProfile } =
+    useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const from = location.state?.from?.pathname || "/";
@@ -25,11 +27,20 @@ function Signup() {
         const user = result.user;
         updateUserProfile(name, photoURL)
           .then(() => {
-            toast.success("Account creation successful!");
-            setTimeout(() => {
-              navigate("/login");
-            }, 2000);
-           
+            const userInfo = {
+              name: name,
+              email: email,
+              photoURL:"https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+            };
+            axios.post("http://localhost:3000/user", userInfo)
+            .then((response) => {
+              // console.log(response);
+              toast.success("Account creation successful!");
+              setTimeout(() => {
+                navigate("/login");
+              }, 2000);
+            });
+
           })
           .catch((error) => {
             toast.error(error.message);
@@ -43,8 +54,18 @@ function Signup() {
   const handleGoogleSignUp = () => {
     signUpWithGmail()
       .then((result) => {
-        toast.success("Login successful!");
-        navigate(from, { replace: true });
+        const userInfo = {
+          name: result?.user?.displayName,
+          email: result?.user?.email,
+        };
+        axios.post("http://localhost:3000/user", userInfo)
+        .then((response) => {
+          // console.log(response);
+          toast.success("Account creation successfull");
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        });
       })
       .catch((error) => {
         toast.error(error.message);
@@ -95,7 +116,9 @@ function Signup() {
               className="input input-bordered"
               {...register("password", { required: true })}
             />
-            {errors.password && <p className="text-red-500">Password is required</p>}
+            {errors.password && (
+              <p className="text-red-500">Password is required</p>
+            )}
           </div>
           <div className="form-control mt-6">
             <input
