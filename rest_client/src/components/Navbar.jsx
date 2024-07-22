@@ -14,6 +14,7 @@ function Navbar() {
   const [isScrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    refetch()
     const handleScroll = () => {
       const offset = window.scrollY;
       if (offset > 0) {

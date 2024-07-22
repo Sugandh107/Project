@@ -21,6 +21,7 @@ import Orders from "../pages/Dashboard/admin/Orders";
 import PrivateRoute from "../privateRoute/PrivateRoute";
 import UpdateMenu from "../pages/Dashboard/admin/UpdateMenu";
 import Payment from "../pages/Shop/Payment";
+import Order from "../components/Order";
 
 
 const router = createBrowserRouter([
@@ -46,6 +47,9 @@ const router = createBrowserRouter([
       {
         path:"/payment",
         element:<Payment/>
+      },{
+        path:"/order",
+        element:<Order/> 
       }
       
     ]

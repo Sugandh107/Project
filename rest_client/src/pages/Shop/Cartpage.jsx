@@ -1,21 +1,29 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Usecart from "../../hooks/Usecart";
 import { FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../context/AuthProvider";
+import axios from "axios";
 
 function Cartpage() {
   const { user } = useContext(AuthContext);
   const [cart, refetch] = Usecart();
   const [cartItems, setcartItems] = useState([]);
-
   const goback = () => {
     window.location.href = "/menu";
   };
-  const handlepayment=()=>{
-    window.location.href="/payment"
-    console.log("clicked");
-  }
+
+  useEffect(() => {
+    refetch
+    // Load Razorpay script dynamically
+    const script = document.createElement('script');
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => console.log("Razorpay script loaded");
+    document.body.appendChild(script);
+
+   
+  }, []);
+
   const handleDelete = (item) => {
     Swal.fire({
       title: "Are you sure?",
@@ -50,7 +58,6 @@ function Cartpage() {
 
   const handleMinus = (item) => {
     if (item.quantity > 1) {
-      refetch();
       fetch(`http://localhost:3000/cart/${item._id}`, {
         method: "PUT",
         headers: {
@@ -66,15 +73,13 @@ function Cartpage() {
             }
             return cartitem;
           });
-          refetch();
           setcartItems(updateCart);
+          refetch();
         });
-      refetch();
     }
   };
 
   const handlePlus = (item) => {
-    refetch();
     fetch(`http://localhost:3000/cart/${item._id}`, {
       method: "PUT",
       headers: {
@@ -90,10 +95,9 @@ function Cartpage() {
           }
           return cartitem;
         });
-        refetch();
         setcartItems(updateCart);
+        refetch();
       });
-    refetch();
   };
 
   const CartTotal = cart.reduce((total, item) => {
@@ -104,6 +108,92 @@ function Cartpage() {
   function calculate(item) {
     return item.price * item.quantity;
   }
+
+  const handlePayment = async (e) => {
+    e.preventDefault();
+
+    // Request to create an order
+    const response = await fetch("http://localhost:3000/order", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: Total * 100, // Amount in paise
+        currency: "INR",
+        receipt: "receiptId",
+      }),
+    });
+
+    const data = await response.json();
+
+    const options = {
+      key: "rzp_test_Rl1KSRpOp7Zj5Y", // Enter the Key ID generated from the Dashboard
+      amount: Total * 100, // Amount in currency subunits (paise)
+      currency: "INR",
+      name: user?.displayName, // Your business name
+      description: "Test Transaction",
+      image: "https://example.com/your_logo",
+      order_id: data.id, // Order ID from the response
+      handler: async function (response) {
+      //   alert("Payment ID: " + response.razorpay_payment_id);
+      //   alert("Order ID: " + response.razorpay_order_id);
+      //   alert("Signature: " + response.razorpay_signature);
+      try {
+        // Send payment details to backend
+        const paymentData = {
+         email:user?.email,
+         transactionId: response.razorpay_payment_id,
+         price:Total,
+         quantity:cart.length,
+         status:"order Pending",
+         itemName:cart.map(item=>item.name),
+         cartitems:cart.map(item=>item._id),
+         menuItems:cart.map(item=>item.menuItemId),
+         itemImage:cart.map(item=>item.image)
+        };
+
+        console.log(paymentData);
+
+        await axios.post("http://localhost:3000/payment", paymentData).then(res=>console.log(res.data))
+
+        // Navigate to orders page
+        window.location.href = "/order";
+      } catch (error) {
+        console.error("Error processing payment:", error);
+      }
+       },
+      prefill: {
+        name: user?.displayName,
+        email: user?.email,
+        contact: "9000090000",
+      },
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+      method: {
+        UPI: true, // Ensure UPI is preferred or available
+        card: true,
+        netbanking: true,
+      }
+    };
+
+    const rzp1 = new window.Razorpay(options);
+    rzp1.on('payment.failed', function (response) {
+      alert("Error Code: " + response.error.code);
+      alert("Error Description: " + response.error.description);
+      alert("Error Source: " + response.error.source);
+      alert("Error Step: " + response.error.step);
+      alert("Error Reason: " + response.error.reason);
+      alert("Order ID: " + response.error.metadata.order_id);
+      alert("Payment ID: " + response.error.metadata.payment_id);
+    });
+
+    rzp1.open();
+  };
 
   return (
     <div className="max-w-screen-2xl container mx-auto xl:px-24 bg-red-200 text-Black">
@@ -186,16 +276,14 @@ function Cartpage() {
         <div className="my-12 flex flex-col md:flex-row justify-center gap-60">
           <div className="space-y-3">
             <h1 className="font-medium">Customer Details</h1>
-            <p>Name: {user?.displayName}</p>
+            <p>Name: {user?.displayName || "Provide you Name"}</p>
             <p>Email: {user?.email}</p>
-            <p>UserID: {user?.uid}</p>
           </div>
           <div className="space-y-3">
             <h1 className="font-medium">Shopping Details</h1>
             <p className="font-bold">Total Items {cart.length}</p>
             <p className="font-bold">Total Price: Rs.{Total}</p>
-            <button onClick={handlepayment}
-            className="btn bg-yellow-500 text-Black hover:bg-yellow-600">
+            <button onClick={handlePayment} className="btn bg-yellow-500 text-Black hover:bg-yellow-600">
               Proceed Checkout
             </button>
           </div>
